@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class SpikeController : MonoBehaviour
 {
@@ -16,7 +17,7 @@ public class SpikeController : MonoBehaviour
         endPosition = new Vector3(transform.position.x,
                                   transform.position.y < 3.5f ? transform.position.y + 1.5f : transform.position.y - 2.5f,
                                   transform.position.z);
-        Debug.Log(endPosition.ToString());
+        snapStart = false;
     }
 
     // Update is called once per frame
@@ -38,5 +39,13 @@ public class SpikeController : MonoBehaviour
     void snapUp()
     {
         transform.position = startPosition;
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.gameObject.name == "Player")
+        {
+            SceneManager.LoadScene("Level1");
+        }
     }
 }

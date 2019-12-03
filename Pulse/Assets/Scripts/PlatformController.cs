@@ -10,7 +10,9 @@ public class PlatformController : MonoBehaviour
     private AudioSource musicController;
     private GameObject player;
     private bool snapReady;
+    private bool dingdongReady;
     public static bool snapStarted;
+    public static bool dingdongStarted;
     // Start is called before the first frame update
     void Start()
     {
@@ -18,12 +20,16 @@ public class PlatformController : MonoBehaviour
         endPosition = transform.position;
         musicController = GameObject.FindWithTag("MusicController").GetComponent<AudioSource>();
         player = GameObject.Find("Player");
+        snapStarted = false;
+        dingdongReady = false;
+        snapStarted = false;
+        dingdongStarted = false;
     }
 
     // Update is called once per frame
     void Update()
     {
-        endPosition.y = startPosition.y + 2 * Mathf.Sin(Time.time * 1.575f);
+        endPosition.y = startPosition.y + 2 * Mathf.Sin(Time.timeSinceLevelLoad * 1.575f);
         if (!musicController.isPlaying && endPosition.y > 3.99)
         {
             musicController.Play();
@@ -35,6 +41,12 @@ public class PlatformController : MonoBehaviour
             Invoke("snaps", musicController.clip.length - musicController.time);
             snapReady = true;
         }
+
+        if (player.transform.position.z > 18 && !dingdongReady)
+        {
+            Invoke("dingdongs", musicController.clip.length - musicController.time);
+            dingdongReady = true;
+        }
     }
 
     void snaps()
@@ -43,5 +55,13 @@ public class PlatformController : MonoBehaviour
         musicController.clip = snap;
         musicController.Play();
         snapStarted = true;
+    }
+
+    void dingdongs()
+    {
+        var dingdong = Resources.Load("3") as AudioClip;
+        musicController.clip = dingdong;
+        musicController.Play();
+        dingdongStarted = true;
     }
 }
