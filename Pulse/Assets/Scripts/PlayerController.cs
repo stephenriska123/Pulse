@@ -12,11 +12,13 @@ public class PlayerController : MonoBehaviour
     public float gravity = 20.0f;
 
     private Vector3 moveDirection = Vector3.zero;
+    private float rotationFrame;
 
     // Start is called before the first frame update
     void Start()
     {
         characterController = GetComponent<CharacterController>();
+        rotationFrame = 0;
     }
 
     // Update is called once per frame
@@ -30,7 +32,7 @@ public class PlayerController : MonoBehaviour
             moveDirection = new Vector3(Input.GetAxis("Horizontal"), 0.0f, Input.GetAxis("Vertical"));
             moveDirection *= speed;
 
-            if (Input.GetButton("Jump"))
+            if (Input.GetButton("Jump") && transform.position.z < 45)
             {
                 moveDirection.y = jumpSpeed;
             }
@@ -41,12 +43,32 @@ public class PlayerController : MonoBehaviour
         // as an acceleration (ms^-2)
         moveDirection.y -= gravity * Time.deltaTime;
 
-        // Move the controller
-        characterController.Move(moveDirection * Time.deltaTime);
-
-        if (transform.position.y < -5)
+        if (transform.position.y < -5 && transform.position.z < 55)
         {
             SceneManager.LoadScene("Level1");
+        }
+
+        if (transform.position.z > 55 && rotationFrame < 45)
+        {
+            // Rotate the cube by converting the angles into a quaternion.
+            Quaternion target = Quaternion.Euler(rotationFrame, 0, 0);
+
+            // Dampen towards the target rotation
+            transform.rotation = Quaternion.Slerp(transform.rotation, target, Time.deltaTime * 5);
+            moveDirection.y -= gravity * Time.deltaTime;
+
+            rotationFrame++;
+        }
+
+        if (rotationFrame >= 45)
+        {
+            moveDirection = new Vector3(Input.GetAxis("Horizontal"), -1, 1);
+            moveDirection *= speed;
+            characterController.Move(moveDirection * Time.deltaTime);
+        } else
+        {
+            // Move the controller
+            characterController.Move(moveDirection * Time.deltaTime);
         }
     }
 }

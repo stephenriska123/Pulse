@@ -11,6 +11,7 @@ public class PlatformController : MonoBehaviour
     private GameObject player;
     private bool snapReady;
     private bool dingdongReady;
+    private bool beatReady;
     public static bool snapStarted;
     public static bool dingdongStarted;
     // Start is called before the first frame update
@@ -22,6 +23,7 @@ public class PlatformController : MonoBehaviour
         player = GameObject.Find("Player");
         snapStarted = false;
         dingdongReady = false;
+        beatReady = false;
         snapStarted = false;
         dingdongStarted = false;
     }
@@ -46,6 +48,14 @@ public class PlatformController : MonoBehaviour
         {
             Invoke("dingdongs", musicController.clip.length - musicController.time);
             dingdongReady = true;
+        }
+
+        if (player.transform.position.z > 55 && !beatReady)
+        {
+            var beat = Resources.Load("4") as AudioClip;
+            musicController.clip = beat;
+            musicController.Play();
+            beatReady = true;
         }
     }
 
