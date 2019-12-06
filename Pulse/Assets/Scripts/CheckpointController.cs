@@ -7,7 +7,6 @@ public class CheckpointController : MonoBehaviour
 
     private AudioSource spaceSound;
     private GameObject player;
-    private bool soundSet;
     public static bool checkpoint;
 
     // Start is called before the first frame update
@@ -15,7 +14,6 @@ public class CheckpointController : MonoBehaviour
     {
         spaceSound = GetComponent<AudioSource>();
         player = GameObject.Find("Player");
-        soundSet = false;
         checkpoint = false;
     }
 
@@ -24,19 +22,11 @@ public class CheckpointController : MonoBehaviour
     {
         if (player.transform.position.z > 32)
         {
-            spaceSound.volume = 1 - ((transform.position.z - player.transform.position.z) / 20);
+            spaceSound.volume = 1 - ((transform.position.z - player.transform.position.z) / 20) - 0.4f;
         }
         if (player.transform.position.z > 52)
         {
-            spaceSound.volume = 1 + ((transform.position.z - player.transform.position.z) / 20);
-        }
-    }
-
-    private void OnTriggerEnter(Collider other)
-    {
-        if (other.gameObject.name == "Player")
-        {
-            checkpoint = true;
+            spaceSound.volume = 1 + ((transform.position.z - player.transform.position.z) / 20) - 0.4f;
         }
     }
 }

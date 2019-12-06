@@ -10,20 +10,25 @@ public class PlayerController : MonoBehaviour
     public float speed = 6.0f;
     public float jumpSpeed = 8.0f;
     public float gravity = 20.0f;
+    public static bool checkpoint;
 
     private Vector3 moveDirection = Vector3.zero;
     private float rotationFrame;
+    private bool finalGround;
 
     // Start is called before the first frame update
     void Start()
     {
         characterController = GetComponent<CharacterController>();
         rotationFrame = 0;
+        finalGround = false;
+        checkpoint = false;
     }
 
     // Update is called once per frame
     void Update()
     {
+
         if (characterController.isGrounded)
         {
             // We are grounded, so recalculate
@@ -32,7 +37,7 @@ public class PlayerController : MonoBehaviour
             moveDirection = new Vector3(Input.GetAxis("Horizontal"), 0.0f, Input.GetAxis("Vertical"));
             moveDirection *= speed;
 
-            if (Input.GetButton("Jump") && transform.position.z < 45)
+            if (Input.GetButton("Jump") && (transform.position.z < 45 || transform.position.z > 125))
             {
                 moveDirection.y = jumpSpeed;
             }
@@ -60,7 +65,7 @@ public class PlayerController : MonoBehaviour
             rotationFrame++;
         }
 
-        if (rotationFrame >= 45)
+        if (rotationFrame >= 45 && !finalGround)
         {
             moveDirection = new Vector3(Input.GetAxis("Horizontal"), -1, 1);
             moveDirection *= speed;
@@ -69,6 +74,32 @@ public class PlayerController : MonoBehaviour
         {
             // Move the controller
             characterController.Move(moveDirection * Time.deltaTime);
+        }
+
+        if (checkpoint)
+        {
+            transform.position = new Vector3(3, -20, 60.7f);
+            checkpoint = false;
+        }
+
+        if (transform.position.y < -100 && transform.position.z > 55)
+        {
+            transform.position = new Vector3(3, -91, 130);
+            Quaternion target = Quaternion.Euler(0, 0, 0);
+            transform.rotation = target;
+            finalGround = true;
+            PlatformController.finalStart = true;
+        }
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.gameObject.name == "FinalGround")
+        {
+            finalGround = true;
+            Quaternion target = Quaternion.Euler(0, 0, 0);
+            transform.rotation = target;
+            PlatformController.finalStart = true;
         }
     }
 }

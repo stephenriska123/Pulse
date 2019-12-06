@@ -12,8 +12,10 @@ public class PlatformController : MonoBehaviour
     private bool snapReady;
     private bool dingdongReady;
     private bool beatReady;
+    public static bool finalStarted;
     public static bool snapStarted;
     public static bool dingdongStarted;
+    public static bool finalStart;
     // Start is called before the first frame update
     void Start()
     {
@@ -24,8 +26,10 @@ public class PlatformController : MonoBehaviour
         snapStarted = false;
         dingdongReady = false;
         beatReady = false;
+        finalStarted = false;
         snapStarted = false;
         dingdongStarted = false;
+        finalStart = false;
     }
 
     // Update is called once per frame
@@ -50,12 +54,18 @@ public class PlatformController : MonoBehaviour
             dingdongReady = true;
         }
 
-        if (player.transform.position.z > 55 && !beatReady)
+        if (player.transform.position.z > 60 && !beatReady)
         {
             var beat = Resources.Load("4") as AudioClip;
             musicController.clip = beat;
             musicController.Play();
             beatReady = true;
+        }
+
+        if (finalStart && !finalStarted)
+        {
+            Invoke("finalclip", musicController.clip.length - musicController.time);
+            finalStart = false;
         }
     }
 
@@ -73,5 +83,13 @@ public class PlatformController : MonoBehaviour
         musicController.clip = dingdong;
         musicController.Play();
         dingdongStarted = true;
+    }
+
+    void finalclip()
+    {
+        var finalClip = Resources.Load("5") as AudioClip;
+        musicController.clip = finalClip;
+        musicController.Play();
+        finalStarted = true;
     }
 }
